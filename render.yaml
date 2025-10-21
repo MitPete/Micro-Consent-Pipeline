@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: micro-consent-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        fromSecret: allowed-origins
+      - key: DATABASE_URL
+        fromSecret: database-url
+      - key: REDIS_URL
+        fromSecret: redis-url
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+    healthCheckPath: /health
+    buildCommand: docker build -t mcp .
+    startCommand: uvicorn api.app:app --host 0.0.0.0 --port 10000
+    domains:
+      - api.microconsent.dev
