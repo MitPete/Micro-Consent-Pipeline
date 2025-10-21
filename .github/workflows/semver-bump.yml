@@ -1,0 +1,75 @@
+name: Auto Bump VERSION on Merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  bump-version:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine bump label
+        id: labels
+        run: |
+          echo "PR_LABELS=$(jq -r '.pull_request.labels[].name // empty' $GITHUB_EVENT_PATH | tr '\n' ' ')" >> $GITHUB_OUTPUT
+
+      - name: Compute next version
+        id: bump
+        run: |
+          CURRENT=$(cat VERSION)
+          echo "Current version: $CURRENT"
+          LABELS="${{ steps.labels.outputs.PR_LABELS }}"
+          echo "PR labels: $LABELS"
+
+          bump_type=""
+          if echo "$LABELS" | grep -q "semver:major"; then
+            bump_type="major"
+          elif echo "$LABELS" | grep -q "semver:minor"; then
+            bump_type="minor"
+          elif echo "$LABELS" | grep -q "semver:patch"; then
+            bump_type="patch"
+          fi
+
+          if [ -z "$bump_type" ]; then
+            echo "No semver label found; defaulting to patch"
+            bump_type="patch"
+          fi
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+          case "$bump_type" in
+            major)
+              MAJOR=$((MAJOR+1)); MINOR=0; PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR+1)); PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH+1))
+              ;;
+          esac
+
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "bump_type=$bump_type" >> $GITHUB_OUTPUT
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Commit and tag new version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          echo "${{ steps.bump.outputs.new_version }}" > VERSION
+          git add VERSION
+          git commit -m "chore(release): bump version to v${{ steps.bump.outputs.new_version }}" || echo "No changes to commit"
+          git tag -a "v${{ steps.bump.outputs.new_version }}" -m "Release v${{ steps.bump.outputs.new_version }}" || echo "Tag exists"
+          git push origin HEAD:main
+          git push origin --tags

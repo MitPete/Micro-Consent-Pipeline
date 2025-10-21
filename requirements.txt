@@ -30,3 +30,5 @@ redis
 python-multipart
 # Changelog and versioning
 git-changelog
+# Dynamic rendering
+playwright>=1.47.0

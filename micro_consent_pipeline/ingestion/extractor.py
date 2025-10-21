@@ -12,6 +12,7 @@ from typing import List, Dict, Union
 
 import requests
 from bs4 import BeautifulSoup
+from playwright.sync_api import sync_playwright
 
 from micro_consent_pipeline.config.settings import Settings
 from micro_consent_pipeline.utils.logger import get_logger
@@ -22,14 +23,16 @@ class ConsentExtractor:
     Class for extracting consent-related elements from HTML or JSON sources.
     """
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, enable_js: bool = None) -> None:
         """
         Initialize the ConsentExtractor with settings.
 
         Args:
             settings (Settings): Application settings.
+            enable_js (bool, optional): Override to enable JavaScript rendering. If None, uses settings.enable_js_render.
         """
         self.settings = settings
+        self.enable_js = enable_js if enable_js is not None else settings.enable_js_render
         self.logger = get_logger(__name__)
 
     def load_source(self, source: str) -> Union[str, dict]:
@@ -45,9 +48,15 @@ class ConsentExtractor:
         self.logger.info("Loading source: %s", source)
         if source.startswith(('http://', 'https://')):
             self.logger.debug("Fetching URL: %s", source)
-            response = requests.get(source, timeout=self.settings.request_timeout)
-            response.raise_for_status()
-            content = response.text
+            if self.enable_js:
+                self.logger.debug("Using dynamic rendering for URL: %s", source)
+                try:
+                    content = self._fetch_dynamic_html(source)
+                except Exception as e:
+                    self.logger.warning("Dynamic rendering failed for %s, falling back to static: %s", source, str(e))
+                    content = self._fetch_static_html(source)
+            else:
+                content = self._fetch_static_html(source)
             try:
                 return json.loads(content)
             except json.JSONDecodeError:
@@ -66,6 +75,42 @@ class ConsentExtractor:
                 return json.loads(source)
             except json.JSONDecodeError:
                 return source
+
+    def _fetch_static_html(self, url: str) -> str:
+        """
+        Fetch HTML content from a URL using static HTTP request.
+
+        Args:
+            url (str): The URL to fetch.
+
+        Returns:
+            str: The HTML content.
+        """
+        response = requests.get(url, timeout=self.settings.request_timeout)
+        response.raise_for_status()
+        return response.text
+
+    def _fetch_dynamic_html(self, url: str) -> str:
+        """
+        Fetch HTML content from a URL using dynamic rendering with Playwright.
+
+        Args:
+            url (str): The URL to fetch.
+
+        Returns:
+            str: The rendered HTML content.
+        """
+        with sync_playwright() as p:
+            browser = p.chromium.launch()
+            try:
+                page = browser.new_page()
+                page.goto(url, timeout=self.settings.js_render_timeout * 1000)
+                # Wait for common consent banner selectors or a short time
+                page.wait_for_timeout(2000)  # 2 seconds for JS to load
+                content = page.content()
+                return content
+            finally:
+                browser.close()
 
     def from_html(self, html_content: str) -> List[Dict[str, str]]:
         """

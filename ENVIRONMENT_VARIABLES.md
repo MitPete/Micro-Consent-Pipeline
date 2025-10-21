@@ -1,6 +1,7 @@
 # Environment Variables Template
 
 ## API Service (Render/Railway)
+
 ```bash
 # Required
 API_KEY=your-secure-api-key-here
@@ -16,15 +17,18 @@ REQUEST_TIMEOUT=30
 ```
 
 ## Dashboard (Streamlit Cloud)
+
 ```bash
 API_BASE=https://api.microconsent.dev
 ENVIRONMENT=production
 ```
 
 ## Landing Page (Vercel/Netlify)
+
 No environment variables required - all links are hardcoded.
 
 ## Security Notes
+
 - Generate a strong API_KEY using: `python -c "import secrets; print(secrets.token_urlsafe(32))"`
 - Never commit API keys to version control
 - Use service-specific secret management (Render secrets, Railway variables, Streamlit secrets)

@@ -21,6 +21,7 @@ npm run preview
 ## Deployment
 
 ### Vercel (Recommended)
+
 1. Connect GitHub repository to Vercel
 2. Set build settings:
    - Framework Preset: `Vite`
@@ -30,6 +31,7 @@ npm run preview
 3. Add custom domain: `microconsent.dev`
 
 ### Netlify
+
 1. Connect GitHub repository to Netlify
 2. Set build settings:
    - Base directory: `landing-page`

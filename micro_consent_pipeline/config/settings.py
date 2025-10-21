@@ -57,3 +57,7 @@ class Settings:
         self.redis_url: str = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
         self.job_timeout: int = int(os.getenv('JOB_TIMEOUT', '300'))  # 5 minutes default
         self.result_ttl: int = int(os.getenv('RESULT_TTL', '3600'))  # 1 hour default
+
+        # Dynamic rendering settings
+        self.enable_js_render: bool = os.getenv('ENABLE_JS_RENDER', 'false').lower() == 'true'
+        self.js_render_timeout: int = int(os.getenv('JS_RENDER_TIMEOUT', '30'))

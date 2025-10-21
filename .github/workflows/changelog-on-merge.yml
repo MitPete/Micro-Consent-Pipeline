@@ -1,0 +1,33 @@
+name: Update Changelog on Merge
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  update-changelog:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Run changelog generation
+        run: |
+          bash scripts/update_changelog.sh --release
+
+      - name: Commit changelog
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add CHANGELOG.md VERSION || true
+          git commit -m "docs: auto-update changelog" || echo "No changelog changes"
+          git push
