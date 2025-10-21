@@ -1,0 +1,14 @@
+[theme]
+base="light"
+primaryColor="#4f46e5"
+secondaryBackgroundColor="#f4f4f5"
+textColor="#111827"
+
+[server]
+headless=true
+enableXsrfProtection=true
+port=8501
+
+[client]
+toolbarMode="minimal"
+showErrorDetails=false
