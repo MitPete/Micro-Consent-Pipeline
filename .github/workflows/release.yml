@@ -198,6 +198,33 @@ jobs:
         run: |
           echo "image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}" >> $GITHUB_OUTPUT
 
+  changelog:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run changelog generation
+        run: |
+          bash scripts/update_changelog.sh --release
+
+      - name: Commit changelog
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add CHANGELOG.md VERSION || true
+          git commit -m "docs: auto-update changelog" || echo "No changes to commit"
+          git push
+
   release:
     runs-on: ubuntu-latest
     needs: [test, build]

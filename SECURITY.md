@@ -101,246 +101,34 @@ ALLOWED_ORIGINS=https://your-app.com,https://dashboard.your-app.com
 
 ```bash
 # Allow localhost for development
-ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8501,http://127.0.0.1:3000
-```
+# Security Policy
 
-#### 3. Rate Limiting Configuration
+## Supported Versions
+| Version | Supported |
+|---------|-----------|
+| 1.x.x   | ✅         |
 
-**Current Limits:**
+## Reporting a Vulnerability
 
-- Global: 60 requests per minute per IP
-- `/analyze` endpoint: 10 requests per minute per IP
-- `/health` endpoint: 60 requests per minute per IP
+Do NOT create a public GitHub issue for security problems. Please use one of the following methods to report security vulnerabilities:
 
-**Customization:**
-Modify limits in `api/app.py`:
+- Email: `security@microconsent.dev` (replace with your contact)
+- GitHub Security Advisories: Use the repository's "Security" tab to create a private report
 
-```python
-@limiter.limit("30/minute")  # Reduce to 30/min
-@limiter.limit("5/minute")   # Reduce analyze to 5/min
-```
+We aim to acknowledge reports within 72 hours and provide a timeline for a fix.
 
-#### 4. Payload and Timeout Limits
+## Handling and Disclosure
 
-**Default Limits:**
+- We will investigate and validate the report.
+- We will coordinate fixes and disclose the vulnerability responsibly.
+- Security fixes will be released as soon as reasonably possible.
 
-- Maximum payload: 10MB
-- Request timeout: 30 seconds
+## After Reporting
 
-**Adjustment Guidelines:**
+- Please avoid public disclosure until a fix is released.
+- We will notify you when a patched release is available.
 
-- Increase payload limit for large documents (max 50MB recommended)
-- Increase timeout for complex processing (max 120 seconds recommended)
-
-## API Security
-
-### Authentication
-
-All protected endpoints require API key authentication:
-
-#### Header Method (Recommended):
-
-```bash
-curl -H "X-API-Key: your-api-key" \
-     -H "Content-Type: application/json" \
-     -d '{"source": "https://example.com/privacy"}' \
-     https://your-api.com/analyze
-```
-
-#### Authorization Header Method:
-
-```bash
-curl -H "Authorization: Bearer your-api-key" \
-     -H "Content-Type: application/json" \
-     -d '{"source": "https://example.com/privacy"}' \
-     https://your-api.com/analyze
-```
-
-### Protected Endpoints
-
-- `POST /analyze` - **Requires API key**
-- `GET /health` - **Open access** (for monitoring)
-- `GET /metrics` - **Open access** (for monitoring)
-
-### Rate Limiting
-
-Rate limits are enforced per IP address:
-
-```json
-{
-  "error": "Rate limit exceeded",
-  "message": "Too many requests. Please try again later.",
-  "request_id": "abc12345",
-  "retry_after": 60
-}
-```
-
-### Input Validation
-
-#### URL Validation
-
-- Only `http://` and `https://` schemes allowed
-- No `file://`, `ftp://`, or other dangerous schemes
-- Must match valid URL pattern
-
-#### HTML Content Validation
-
-- Maximum size: 1MB (configurable)
-- Sanitized using bleach library
-- Dangerous tags and attributes removed
-
-#### Output Format Validation
-
-- Only `json` and `csv` formats accepted
-- Case-sensitive validation
-
-## Security Headers
-
-All responses include security headers:
-
-```http
-X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Referrer-Policy: no-referrer
-Content-Security-Policy: default-src 'self'
-X-XSS-Protection: 1; mode=block
-X-Request-ID: abc12345
-```
-
-### Header Explanations
-
-- **X-Content-Type-Options**: Prevents MIME type sniffing attacks
-- **X-Frame-Options**: Prevents clickjacking by blocking iframe embedding
-- **Referrer-Policy**: Prevents information leakage via referrer headers
-- **Content-Security-Policy**: Restricts resource loading to same origin
-- **X-XSS-Protection**: Enables browser XSS filtering
-- **X-Request-ID**: Unique identifier for request tracing
-
-## Audit Logging
-
-### Security Events Logged
-
-All security-relevant events are logged in structured JSON format:
-
-#### Authentication Events
-
-```json
-{
-  "timestamp": "2023-12-07T10:30:00.123Z",
-  "level": "WARNING",
-  "message": "Invalid API key",
-  "request_id": "abc12345",
-  "client_ip": "192.168.1.100",
-  "user_agent": "curl/7.68.0",
-  "auth_status": "invalid_key"
-}
-```
-
-#### Rate Limiting Events
-
-```json
-{
-  "timestamp": "2023-12-07T10:30:00.123Z",
-  "level": "WARNING",
-  "message": "Rate limit exceeded",
-  "request_id": "abc12345",
-  "client_ip": "192.168.1.100",
-  "rate_limit_status": "exceeded",
-  "endpoint": "/analyze"
-}
-```
-
-#### Request Processing Events
-
-```json
-{
-  "timestamp": "2023-12-07T10:30:00.123Z",
-  "level": "INFO",
-  "message": "Request completed",
-  "request_id": "abc12345",
-  "client_ip": "192.168.1.100",
-  "status_code": 200,
-  "duration_ms": 1500,
-  "auth_status": "success"
-}
-```
-
-### Log Analysis
-
-Use structured logs for security monitoring:
-
-```bash
-# Find failed authentication attempts
-grep '"auth_status": "invalid_key"' app.log
-
-# Find rate limit violations
-grep '"rate_limit_status": "exceeded"' app.log
-
-# Find requests from specific IP
-grep '"client_ip": "192.168.1.100"' app.log
-
-# Find slow requests (potential DoS)
-grep '"duration_ms": [0-9][0-9][0-9][0-9]' app.log
-```
-
-## Deployment Security
-
-### Production Checklist
-
-#### Before Deployment:
-
-- [ ] Generate strong API key (32+ characters)
-- [ ] Configure ALLOWED_ORIGINS for production domains only
-- [ ] Set appropriate payload and timeout limits
-- [ ] Enable structured logging (LOG_LEVEL=INFO or DEBUG)
-- [ ] Configure log aggregation and monitoring
-- [ ] Set up alerting for security events
-
-#### Infrastructure Security:
-
-- [ ] Use HTTPS/TLS for all communications
-- [ ] Configure reverse proxy (nginx, Cloudflare) with additional security
-- [ ] Implement network-level firewalls
-- [ ] Use container security scanning
-- [ ] Regular security updates for base images
-- [ ] Implement backup and disaster recovery
-
-#### Monitoring Setup:
-
-- [ ] Monitor authentication failures
-- [ ] Monitor rate limit violations
-- [ ] Monitor unusual traffic patterns
-- [ ] Set up alerts for error rate spikes
-- [ ] Implement log retention policies
-
-### Docker Security
-
-#### Secure Container Configuration:
-
-```yaml
-services:
-  micro-consent-pipeline:
-    build: .
-    environment:
-      - API_KEY=${API_KEY} # Load from secure environment
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
-    security_opt:
-      - no-new-privileges:true
-    read_only: true
-    tmpfs:
-      - /tmp:noexec,nosuid,size=100m
-    user: "1000:1000" # Run as non-root user
-```
-
-#### Network Security:
-
-```yaml
-networks:
-  app-network:
-    driver: bridge
-    internal: true # Prevent external access
-
-services:
+Thank you for helping keep Micro-Consent-Pipeline secure.
   micro-consent-pipeline:
     networks:
       - app-network
