@@ -1,0 +1,32 @@
+spacy
+pydantic
+pytest
+beautifulsoup4
+requests
+langdetect
+pandas
+fastapi
+uvicorn
+streamlit
+plotly
+httpx
+python-dotenv
+prometheus-client
+prometheus-fastapi-instrumentator
+python-json-logger
+opentelemetry-sdk
+opentelemetry-instrumentation-fastapi
+opentelemetry-exporter-otlp
+slowapi
+bleach
+# Database dependencies
+sqlalchemy
+psycopg2-binary
+alembic
+# Async job queue dependencies
+rq
+redis
+# Additional utilities
+python-multipart
+# Changelog and versioning
+git-changelog

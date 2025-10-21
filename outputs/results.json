@@ -1,0 +1,16 @@
+[
+  {
+    "text": "Accept cookies",
+    "category": "necessary",
+    "confidence": 0.9,
+    "type": "button",
+    "element": "button"
+  },
+  {
+    "text": "Marketing preferences",
+    "category": "marketing",
+    "confidence": 0.8,
+    "type": "link",
+    "element": "link"
+  }
+]

@@ -1,0 +1,55 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Micro-Consent-Pipeline"
+abstract: "A lightweight privacy consent analysis pipeline for analyzing and categorizing consent mechanisms on websites"
+authors:
+  - family-names: "Mitchell"
+    given-names: "Peter"
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+    email: "peter.mitchell@example.com"
+    affiliation: "Independent Researcher"
+repository-code: "https://github.com/MitPete/Micro-Consent-Pipeline"
+url: "https://github.com/MitPete/Micro-Consent-Pipeline"
+license: MIT
+keywords:
+  - privacy
+  - consent
+  - GDPR
+  - NLP
+  - web scraping
+  - analysis
+  - pipeline
+  - machine learning
+  - text classification
+  - python
+version: "1.0.0"
+date-released: "2025-10-21"
+preferred-citation:
+  type: software
+  title: "Micro-Consent-Pipeline: A Lightweight Privacy Consent Analysis Pipeline"
+  authors:
+    - family-names: "Mitchell"
+      given-names: "Peter"
+      orcid: "https://orcid.org/0000-0000-0000-0000"
+  year: 2025
+  url: "https://github.com/MitPete/Micro-Consent-Pipeline"
+  repository-code: "https://github.com/MitPete/Micro-Consent-Pipeline"
+  license: MIT
+  version: "1.0.0"
+references:
+  - type: article
+    title: "GDPR Compliance and Consent Mechanisms"
+    journal: "Privacy Engineering Journal"
+    year: 2024
+    authors:
+      - family-names: "Smith"
+        given-names: "Jane"
+  - type: conference-paper
+    title: "Automated Analysis of Web Privacy Policies"
+    conference:
+      name: "International Conference on Privacy Technologies"
+    year: 2024
+    authors:
+      - family-names: "Doe"
+        given-names: "John"

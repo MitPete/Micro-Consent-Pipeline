@@ -1,0 +1,4 @@
+text,category,confidence,type,element
+Accept All,Functional,0.8,button,button
+Reject All,Functional,0.8,button,button
+Privacy Policy,Privacy,0.8,link,a
