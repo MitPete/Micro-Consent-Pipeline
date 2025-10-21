@@ -5,6 +5,8 @@
 [![Release](https://github.com/MitPete/Micro-Consent-Pipeline/workflows/Release%20Build%20%26%20Publish/badge.svg)](https://github.com/MitPete/Micro-Consent-Pipeline/actions/workflows/release.yml)
 [![Docker](https://img.shields.io/docker/pulls/mitpete/micro-consent-pipeline)](https://hub.docker.com/r/mitpete/micro-consent-pipeline)
 [![License](https://img.shields.io/github/license/MitPete/Micro-Consent-Pipeline)](LICENSE)
+[![Contributing](https://img.shields.io/badge/contributing-guidelines-brightgreen)](CONTRIBUTING.md)
+[![Security](https://img.shields.io/badge/security-policy-red)](SECURITY.md)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
 
 A lightweight privacy consent analysis pipeline built with Python for analyzing and categorizing consent mechanisms on websites.

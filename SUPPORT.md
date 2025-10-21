@@ -186,6 +186,16 @@ Report security vulnerabilities privately to: security@micro-consent-pipeline.ex
 
 _Note: These are goals, not guarantees. Response times may vary based on maintainer availability and issue complexity._
 
+## Repository Secrets (CI / Release)
+
+For CI jobs that build and publish container images or push artifacts, please ensure the following repository secrets are configured in GitHub (Settings → Secrets → Actions):
+
+- `DOCKERHUB_USERNAME` — Docker Hub username (if using Docker Hub)
+- `DOCKERHUB_TOKEN` — Docker Hub access token/password (keep this secret)
+- `GITHUB_TOKEN` — Provided automatically by Actions but may need additional permissions for external registries
+
+If you use GitHub Packages instead of Docker Hub, you can rely on the default `GITHUB_TOKEN` and adjust the workflows accordingly. Keep these secrets up-to-date and restricted to maintainers only.
+
 ## Community Guidelines
 
 ### Be Respectful

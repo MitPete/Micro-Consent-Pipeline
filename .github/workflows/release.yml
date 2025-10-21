@@ -12,6 +12,26 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    steps:
+      - name: Check required secrets
+        run: |
+          echo "Checking required secrets for release pipeline"
+          MISSING=0
+          # List the secrets we expect for publishing images
+          for s in DOCKERHUB_USERNAME DOCKERHUB_TOKEN; do
+            if [ -z "${{ secrets.$s }}" ]; then
+              echo "Secret $s is not set"
+              MISSING=1
+            fi
+          done
+          if [ "$MISSING" -eq 1 ]; then
+            echo "One or more required secrets are missing. See SUPPORT.md for required repository secrets."
+            exit 1
+          fi
+
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -211,7 +231,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Run changelog generation
         run: |

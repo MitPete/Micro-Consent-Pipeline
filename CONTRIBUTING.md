@@ -45,6 +45,22 @@ git commit -m "feat: add async job processing for privacy scans"
 - Make small, focused PRs with a clear description of changes.
 - Tag your PR with one of: `semver:patch`, `semver:minor`, or `semver:major` to indicate the intended version bump.
 
+## Release Labels
+
+We use a small set of GitHub labels to drive automatic semantic version bumps and to help triage PRs. The recommended labels are:
+
+- `semver:patch` — Backwards-compatible bug fixes
+- `semver:minor` — New backwards-compatible features
+- `semver:major` — Breaking changes that require a major version bump
+
+You can create these labels automatically with the included script:
+
+```bash
+bash scripts/create_labels.sh owner/repo
+```
+
+This requires the `gh` (GitHub CLI) tool and an authenticated session (for CI, set GITHUB_TOKEN). The script will attempt to read the repo from the `origin` remote if you don't provide one.
+
 ## Tests
 
 Run the full test suite locally before opening a PR:
